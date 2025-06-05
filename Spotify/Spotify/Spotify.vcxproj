@@ -128,6 +128,7 @@
     <ClCompile Include="Spotify.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Account.h" />
     <ClInclude Include="LinkedList.h" />
     <ClInclude Include="Node.h" />
   </ItemGroup>
