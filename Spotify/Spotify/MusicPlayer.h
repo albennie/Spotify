@@ -32,4 +32,15 @@ public:
     void loginUser();
 
     void loginAdmin();
+
+    void addSong();
+
+    void editSong();
+
+    void deleteSong();
+
+    void viewAllSongs();
+
+    void filterSongs(LinkedList<Song>& songs, const string& title);
+
 };
