@@ -25,7 +25,10 @@ private:
 
     void displayPlaylists(const LinkedList<Playlist>& playlists, const string& title, bool);
 
+    void initializeDefaultData();
+
 public:
+    MusicPlayer();
 
     void run();
 
@@ -99,3 +102,5 @@ public:
 
     void playSavedSongs();
 };
+
+

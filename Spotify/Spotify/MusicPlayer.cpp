@@ -145,6 +145,182 @@ void MusicPlayer::displayPlaylists(const LinkedList<Playlist>& playlists, const 
         << RESET;
 }
 
+void MusicPlayer::initializeDefaultData() {
+    allSingers.PushBack(Singer("Dua Lipa", 3));
+    allSingers.PushBack(Singer("Taylor Swift", 3));
+    allSingers.PushBack(Singer("Lana Del Rey", 3));
+
+    LinkedList<Song> duaLipaSongs;
+    duaLipaSongs.PushBack(Song("New Rules", "Dua Lipa", 2017, "Pop"));
+    duaLipaSongs.PushBack(Song("Don't Start Now", "Dua Lipa", 2019, "Pop"));
+    duaLipaSongs.PushBack(Song("Levitating", "Dua Lipa", 2020, "Pop"));
+    duaLipaSongs.PushBack(Song("Physical", "Dua Lipa", 2020, "Pop"));
+    duaLipaSongs.PushBack(Song("Break My Heart", "Dua Lipa", 2020, "Pop"));
+    duaLipaSongs.PushBack(Song("Love Again", "Dua Lipa", 2020, "Pop"));
+    duaLipaSongs.PushBack(Song("IDGAF", "Dua Lipa", 2017, "Pop"));
+    duaLipaSongs.PushBack(Song("One Kiss", "Dua Lipa", 2018, "Dance"));
+    duaLipaSongs.PushBack(Song("Be the One", "Dua Lipa", 2015, "Pop"));
+    duaLipaSongs.PushBack(Song("Hotter Than Hell", "Dua Lipa", 2016, "Pop"));
+    duaLipaSongs.PushBack(Song("Future Nostalgia", "Dua Lipa", 2020, "Pop"));
+    duaLipaSongs.PushBack(Song("Cool", "Dua Lipa", 2020, "Pop"));
+    duaLipaSongs.PushBack(Song("Hallucinate", "Dua Lipa", 2020, "Dance"));
+    duaLipaSongs.PushBack(Song("Pretty Please", "Dua Lipa", 2020, "Pop"));
+
+    LinkedList<Song> taylorSwiftSongs;
+    taylorSwiftSongs.PushBack(Song("Love Story", "Taylor Swift", 2008, "Pop"));
+    taylorSwiftSongs.PushBack(Song("Shake It Off", "Taylor Swift", 2014, "Pop"));
+    taylorSwiftSongs.PushBack(Song("Blank Space", "Taylor Swift", 2014, "Pop"));
+    taylorSwiftSongs.PushBack(Song("Bad Blood", "Taylor Swift", 2014, "Pop"));
+    taylorSwiftSongs.PushBack(Song("Lover", "Taylor Swift", 2019, "Pop"));
+    taylorSwiftSongs.PushBack(Song("You Belong With Me", "Taylor Swift", 2008, "Country"));
+    taylorSwiftSongs.PushBack(Song("Cardigan", "Taylor Swift", 2020, "Folk"));
+    taylorSwiftSongs.PushBack(Song("Willow", "Taylor Swift", 2020, "Folk"));
+    taylorSwiftSongs.PushBack(Song("Anti-Hero", "Taylor Swift", 2022, "Pop"));
+    taylorSwiftSongs.PushBack(Song("Style", "Taylor Swift", 2014, "Pop"));
+    taylorSwiftSongs.PushBack(Song("Delicate", "Taylor Swift", 2017, "Pop"));
+    taylorSwiftSongs.PushBack(Song("Cruel Summer", "Taylor Swift", 2019, "Pop"));
+    taylorSwiftSongs.PushBack(Song("Evermore", "Taylor Swift", 2020, "Folk"));
+
+    LinkedList<Song> lanaDelReySongs;
+    lanaDelReySongs.PushBack(Song("Summertime Sadness", "Lana Del Rey", 2012, "Alternative"));
+    lanaDelReySongs.PushBack(Song("Young and Beautiful", "Lana Del Rey", 2013, "Alternative"));
+    lanaDelReySongs.PushBack(Song("Video Games", "Lana Del Rey", 2012, "Indie"));
+    lanaDelReySongs.PushBack(Song("Born to Die", "Lana Del Rey", 2012, "Alternative"));
+    lanaDelReySongs.PushBack(Song("Blue Jeans", "Lana Del Rey", 2012, "Indie"));
+    lanaDelReySongs.PushBack(Song("West Coast", "Lana Del Rey", 2014, "Alternative"));
+    lanaDelReySongs.PushBack(Song("Doin' Time", "Lana Del Rey", 2019, "Alternative"));
+    lanaDelReySongs.PushBack(Song("Norman Fucking Rockwell", "Lana Del Rey", 2019, "Indie"));
+    lanaDelReySongs.PushBack(Song("Venice Bitch", "Lana Del Rey", 2019, "Indie"));
+    lanaDelReySongs.PushBack(Song("Love", "Lana Del Rey", 2017, "Alternative"));
+    lanaDelReySongs.PushBack(Song("Chemtrails Over the ...", "Lana Del Rey", 2021, "Indie"));
+    lanaDelReySongs.PushBack(Song("Happiness is a Butterfly", "Lana Del Rey", 2019, "Indie"));
+    lanaDelReySongs.PushBack(Song("Dark Paradise", "Lana Del Rey", 2012, "Alternative"));
+
+    for (int i = 0; i < duaLipaSongs.GetSize(); ++i) {
+        allSongs.PushBack(duaLipaSongs[i]);
+        for (int j = 0; j < allSingers.GetSize(); ++j) {
+            if (allSingers[j].getName() == "Dua Lipa") {
+                allSingers[j].getSongs().PushBack(duaLipaSongs[i]);
+                allSingers[j].incrementSongCount();
+            }
+        }
+    }
+    for (int i = 0; i < taylorSwiftSongs.GetSize(); ++i) {
+        allSongs.PushBack(taylorSwiftSongs[i]);
+        for (int j = 0; j < allSingers.GetSize(); ++j) {
+            if (allSingers[j].getName() == "Taylor Swift") {
+                allSingers[j].getSongs().PushBack(taylorSwiftSongs[i]);
+                allSingers[j].incrementSongCount();
+            }
+        }
+    }
+    for (int i = 0; i < lanaDelReySongs.GetSize(); ++i) {
+        allSongs.PushBack(lanaDelReySongs[i]);
+        for (int j = 0; j < allSingers.GetSize(); ++j) {
+            if (allSingers[j].getName() == "Lana Del Rey") {
+                allSingers[j].getSongs().PushBack(lanaDelReySongs[i]);
+                allSingers[j].incrementSongCount();
+            }
+        }
+    }
+
+    Playlist popHits("Pop Hits");
+    Playlist chillVibes("Chill Vibes");
+    Playlist bestOf2020s("Best of 2020s");
+    Playlist mixedFavorites("Mixed Favorites");
+
+    popHits.getSongs().PushBack(duaLipaSongs[0]);
+    popHits.getSongs().PushBack(duaLipaSongs[1]);
+    popHits.getSongs().PushBack(taylorSwiftSongs[0]);
+    popHits.getSongs().PushBack(taylorSwiftSongs[1]);
+    popHits.getSongs().PushBack(taylorSwiftSongs[2]);
+    popHits.getSongs().PushBack(duaLipaSongs[2]);
+    popHits.getSongs().PushBack(duaLipaSongs[3]);
+    popHits.getSongs().PushBack(taylorSwiftSongs[4]);
+    popHits.getSongs().PushBack(taylorSwiftSongs[8]);
+    popHits.getSongs().PushBack(duaLipaSongs[4]);
+
+    chillVibes.getSongs().PushBack(lanaDelReySongs[0]);
+    chillVibes.getSongs().PushBack(lanaDelReySongs[2]);
+    chillVibes.getSongs().PushBack(lanaDelReySongs[4]);
+    chillVibes.getSongs().PushBack(taylorSwiftSongs[6]);
+    chillVibes.getSongs().PushBack(taylorSwiftSongs[7]);
+    chillVibes.getSongs().PushBack(lanaDelReySongs[7]);
+    chillVibes.getSongs().PushBack(lanaDelReySongs[8]);
+    chillVibes.getSongs().PushBack(lanaDelReySongs[10]);
+    chillVibes.getSongs().PushBack(lanaDelReySongs[11]);
+    chillVibes.getSongs().PushBack(duaLipaSongs[5]);
+
+    bestOf2020s.getSongs().PushBack(duaLipaSongs[2]);
+    bestOf2020s.getSongs().PushBack(duaLipaSongs[3]);
+    bestOf2020s.getSongs().PushBack(duaLipaSongs[4]);
+    bestOf2020s.getSongs().PushBack(taylorSwiftSongs[6]);
+    bestOf2020s.getSongs().PushBack(taylorSwiftSongs[7]);
+    bestOf2020s.getSongs().PushBack(taylorSwiftSongs[8]);
+    bestOf2020s.getSongs().PushBack(lanaDelReySongs[6]);
+    bestOf2020s.getSongs().PushBack(lanaDelReySongs[7]);
+    bestOf2020s.getSongs().PushBack(lanaDelReySongs[8]);
+    bestOf2020s.getSongs().PushBack(lanaDelReySongs[10]);
+
+    mixedFavorites.getSongs().PushBack(duaLipaSongs[0]);
+    mixedFavorites.getSongs().PushBack(taylorSwiftSongs[0]);
+    mixedFavorites.getSongs().PushBack(lanaDelReySongs[0]);
+    mixedFavorites.getSongs().PushBack(duaLipaSongs[1]);
+    mixedFavorites.getSongs().PushBack(taylorSwiftSongs[1]);
+    mixedFavorites.getSongs().PushBack(lanaDelReySongs[1]);
+    mixedFavorites.getSongs().PushBack(duaLipaSongs[2]);
+    mixedFavorites.getSongs().PushBack(taylorSwiftSongs[4]);
+    mixedFavorites.getSongs().PushBack(lanaDelReySongs[2]);
+    mixedFavorites.getSongs().PushBack(duaLipaSongs[7]);
+
+    allPlaylists.PushBack(popHits);
+    allPlaylists.PushBack(chillVibes);
+    allPlaylists.PushBack(bestOf2020s);
+    allPlaylists.PushBack(mixedFavorites);
+
+    for (int i = 0; i < allSingers.GetSize(); ++i) {
+        if (allSingers[i].getName() == "Dua Lipa") {
+            allSingers[i].getPlaylists().PushBack(popHits);
+            allSingers[i].getPlaylists().PushBack(bestOf2020s);
+            allSingers[i].getPlaylists().PushBack(mixedFavorites);
+        }
+        else if (allSingers[i].getName() == "Taylor Swift") {
+            allSingers[i].getPlaylists().PushBack(popHits);
+            allSingers[i].getPlaylists().PushBack(chillVibes);
+            allSingers[i].getPlaylists().PushBack(bestOf2020s);
+            allSingers[i].getPlaylists().PushBack(mixedFavorites);
+        }
+        else if (allSingers[i].getName() == "Lana Del Rey") {
+            allSingers[i].getPlaylists().PushBack(chillVibes);
+            allSingers[i].getPlaylists().PushBack(bestOf2020s);
+            allSingers[i].getPlaylists().PushBack(mixedFavorites);
+        }
+    }
+
+    User defaultUser("Bennie", "123456");
+    Playlist myPlaylist("My Playlist");
+    myPlaylist.getSongs().PushBack(duaLipaSongs[0]);
+    myPlaylist.getSongs().PushBack(taylorSwiftSongs[0]);
+    myPlaylist.getSongs().PushBack(lanaDelReySongs[0]);
+    defaultUser.getPlaylists().PushBack(myPlaylist);
+
+    defaultUser.getFavorites().PushBack(duaLipaSongs[1]);
+    defaultUser.getFavorites().PushBack(taylorSwiftSongs[4]);
+    defaultUser.getFavorites().PushBack(lanaDelReySongs[1]);
+
+    defaultUser.getSavedSongs().PushBack(duaLipaSongs[2]);
+    defaultUser.getSavedSongs().PushBack(taylorSwiftSongs[6]);
+    defaultUser.getSavedSongs().PushBack(lanaDelReySongs[2]);
+
+    users.PushBack(defaultUser);
+}
+
+
+MusicPlayer::MusicPlayer() {
+    initializeDefaultData();
+}
+
+
 void MusicPlayer::run() {
     while (true) {
         displayHeader("Music Player");
