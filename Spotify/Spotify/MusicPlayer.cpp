@@ -535,3 +535,135 @@ void MusicPlayer::filterSongs(LinkedList<Song>& songs, const string& title) {
     }
 }
 
+void MusicPlayer::createPlaylist() {
+    displayHeader("Create Playlist");
+    string name = getValidInput("Enter playlist name: ");
+
+    Playlist playlist(name);
+
+    if (isAdminLoggedIn) allPlaylists.PushBack(playlist);
+    else currentUser->getPlaylists().PushBack(playlist);
+
+    cout << GREEN << "Playlist created successfully!" << RESET << '\n';
+}
+
+void MusicPlayer::editPlaylist() {
+    displayHeader("Edit Playlist");
+
+    LinkedList<Playlist>& playlists = isAdminLoggedIn ? allPlaylists : currentUser->getPlaylists();
+
+    displayPlaylists(playlists, "Playlists");
+
+    if (playlists.IsEmpty()) return;
+
+    int index = getValidNumber("Enter playlist number to edit: ", 1, playlists.GetSize());
+    Playlist& playlist = playlists[index - 1];
+
+    while (true) {
+        displayHeader("Edit Playlist - " + playlist.getName());
+
+        cout << GREEN << "1. Change Playlist Name\n2. Delete Song from Playlist\n3. Back" << RESET << '\n';
+
+        int choice = getValidNumber("Choose an option: ", 1, 3);
+
+        if (choice == 1)
+        {
+            playlist.setName(getValidInput("Enter new playlist name: "));
+            cout << GREEN << "Playlist name updated successfully!" << RESET << '\n';
+        }
+        else if (choice == 2)
+        {
+            displaySongs(playlist.getSongs(), "Playlist Songs");
+            if (playlist.getSongs().IsEmpty()) break;
+            int songIndex = getValidNumber("Enter song number to delete: ", 1, playlist.getSongs().GetSize());
+            playlist.getSongs().Remove(playlist.getSongs()[songIndex - 1]);
+            cout << GREEN << "Song removed from playlist!" << RESET << '\n';
+        }
+        else if (choice == 3)
+        {
+            return;
+        }
+        cout << "Press Enter to continue..."; cin.get();
+    }
+}
+
+void MusicPlayer::deletePlaylist() {
+    displayHeader("Delete Playlist");
+
+    LinkedList<Playlist>& playlists = isAdminLoggedIn ? allPlaylists : currentUser->getPlaylists();
+
+    displayPlaylists(playlists, "Playlists");
+
+    if (playlists.IsEmpty()) return;
+
+    int index = getValidNumber("Enter playlist number to delete: ", 1, playlists.GetSize());
+
+    Playlist playlist = playlists[index - 1];
+
+    playlists.Remove(playlist);
+
+    for (int i = 0; i < allSingers.GetSize(); i++) {
+        allSingers[i].getPlaylists().Remove(playlist);
+    }
+    cout << GREEN << "Playlist deleted successfully!" << RESET << '\n';
+}
+
+void MusicPlayer::addSongToPlaylist() {
+    displayHeader("Add Song to Playlist");
+    displaySongs(allSongs, "All Songs");
+
+    if (allSongs.IsEmpty()) return;
+
+    int songIndex = getValidNumber("Enter song number to add: ", 1, allSongs.GetSize());
+    Song song = allSongs[songIndex - 1];
+
+    LinkedList<Playlist>& playlists = isAdminLoggedIn ? allPlaylists : currentUser->getPlaylists();
+
+    displayPlaylists(playlists, "Available Playlists");
+
+    if (playlists.IsEmpty()) return;
+    int plIndex = getValidNumber("Enter playlist number: ", 1, playlists.GetSize());
+    Playlist& playlist = playlists[plIndex - 1];
+
+    if (!playlist.getSongs().Contains(song)) {
+        playlist.getSongs().PushBack(song);
+        cout << GREEN << "Song added to playlist successfully!" << RESET << '\n';
+    }
+    else {
+        cout << RED << "Song already exists in this playlist!" << RESET << '\n';
+    }
+}
+
+void MusicPlayer::viewPlaylists() {
+    displayHeader("Playlists");
+
+    cout << "Your Playlists:\n";
+
+    displayPlaylists(currentUser->getPlaylists(), "Your Playlists", false);
+
+    cout << "\nAll Playlists:\n";
+
+    displayPlaylists(allPlaylists, "All Playlists", false);
+}
+
+void MusicPlayer::searchPlaylists() {
+    displayHeader("Search Playlists");
+
+    string term = getValidInput("Enter search term: ");
+
+    LinkedList<Playlist> results;
+
+    for (int i = 0; i < allPlaylists.GetSize(); i++) {
+        if (allPlaylists[i].getName().find(term) != string::npos) {
+            results.PushBack(allPlaylists[i]);
+        }
+    }
+    for (int i = 0; i < currentUser->getPlaylists().GetSize(); i++) {
+        if (currentUser->getPlaylists()[i].getName().find(term) != string::npos) {
+            results.PushBack(currentUser->getPlaylists()[i]);
+        }
+    }
+
+    displayPlaylists(results, "Search Results");
+}
+

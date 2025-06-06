@@ -43,4 +43,16 @@ public:
 
     void filterSongs(LinkedList<Song>& songs, const string& title);
 
+    void createPlaylist();
+
+    void editPlaylist();
+
+    void deletePlaylist();
+
+    void addSongToPlaylist();
+
+    void viewPlaylists();
+
+    void searchPlaylists();
+
 };
