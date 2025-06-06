@@ -25,6 +25,11 @@ private:
 
     void displayPlaylists(const LinkedList<Playlist>& playlists, const string& title, bool);
 
-
 public:
+
+    void registerUser();
+
+    void loginUser();
+
+    void loginAdmin();
 };

@@ -145,3 +145,56 @@ void MusicPlayer::displayPlaylists(const LinkedList<Playlist>& playlists, const 
         << RESET;
 }
 
+void MusicPlayer::registerUser() {
+
+    displayHeader("Register");
+
+    string username = getValidInput("Enter username: ");
+
+    for (int i = 0; i < users.GetSize(); i++) {
+        if (users[i].getUsername() == username) {
+            cout << RED << "Username already exists!" << RESET << '\n';
+            return;
+        }
+    }
+
+    string password = getValidInput("Enter password: ");
+
+    users.PushBack(User(username, password));
+
+    cout << GREEN << "Registration successful!" << RESET << '\n';
+}
+
+void MusicPlayer::loginUser() {
+    displayHeader("User Login");
+
+    string username = getValidInput("Enter username: ");
+    string password = getValidInput("Enter password: ");
+
+    for (int i = 0; i < users.GetSize(); i++) {
+        if (users[i].getUsername() == username && users[i].getPassword() == password) {
+            currentUser = &users[i];
+            userMenu();
+            currentUser = nullptr;
+            return;
+        }
+    }
+    cout << RED << "Invalid credentials!" << RESET << '\n';
+}
+
+void MusicPlayer::loginAdmin() {
+    displayHeader("Admin Login");
+
+    string username = getValidInput("Enter username: ");
+    string password = getValidInput("Enter password: ");
+
+    if (admin.login(username, password)) {
+        isAdminLoggedIn = true;
+        adminMenu();
+        isAdminLoggedIn = false;
+    }
+    else {
+        cout << RED << "Invalid credentials!" << RESET << '\n';
+    }
+}
+
