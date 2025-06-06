@@ -798,3 +798,503 @@ void MusicPlayer::viewSingerPage() {
     cout << "\nAssociated Playlists:\n";
     displayPlaylists(singer.getPlaylists(), "Singer Playlists", false);
 }
+
+void MusicPlayer::playPlaylist() {
+    displayHeader("Play Playlist");
+
+    int counter = 1;
+    cout << MAGENTA << "Your Playlists:\n" << RESET;
+    for (int i = 0; i < currentUser->getPlaylists().GetSize(); i++, counter++) {
+        cout << YELLOW << counter << ". " << currentUser->getPlaylists()[i].getName()
+            << " (" << currentUser->getPlaylists()[i].getSongs().GetSize() << " songs)" << RESET << '\n';
+    }
+
+    cout << '\n' << MAGENTA << "All Playlists:\n" << RESET;
+    for (int i = 0; i < allPlaylists.GetSize(); i++, counter++) {
+        cout << YELLOW << counter << ". " << allPlaylists[i].getName()
+            << " (" << allPlaylists[i].getSongs().GetSize() << " songs)" << RESET << '\n';
+    }
+
+    int totalPlaylists = currentUser->getPlaylists().GetSize() + allPlaylists.GetSize();
+    int selection = getValidNumber("Enter playlist number: ", 1, totalPlaylists);
+
+    Playlist* playlist = nullptr;
+    if (selection <= currentUser->getPlaylists().GetSize()) {
+        playlist = &currentUser->getPlaylists()[selection - 1];
+    }
+    else {
+        int idx = selection - currentUser->getPlaylists().GetSize() - 1;
+        playlist = &allPlaylists[idx];
+    }
+
+    if (!playlist || playlist->getSongs().IsEmpty()) {
+        cout << RED << "Playlist not found or empty!" << RESET << '\n';
+        return;
+    }
+
+    string sortChoice = getValidInput("Sort playlist before playing? (y/n): ");
+    if (sortChoice == "y" || sortChoice == "Y") {
+        string criteria = getValidInput("Sort by (name/singer/year/genre): ");
+        if (criteria != "name" && criteria != "singer" && criteria != "year" && criteria != "genre") {
+            cout << RED << "Invalid criteria! Skipping sort." << RESET << '\n';
+        }
+        else {
+            bubbleSort(playlist->getSongs(), criteria);
+            cout << GREEN << "Playlist sorted!" << RESET << '\n';
+            displaySongs(playlist->getSongs(), "Sorted Playlist");
+        }
+    }
+
+    string mode = getValidInput("Set play mode (Sequential/Random/Repeat): ");
+    if (mode != "Sequential" && mode != "Random" && mode != "Repeat") {
+        cout << RED << "Invalid play mode! Using Sequential." << RESET << '\n';
+        mode = "Sequential";
+    }
+    playlist->setPlayMode(mode);
+    string loop = getValidInput("Enable loop? (y/n): ");
+    playlist->setIsLoop(loop == "y" || loop == "Y");
+    playlist->setCurrentIndex(0);
+
+    while (true) {
+        displayHeader("Now Playing - " + playlist->getName());
+        Song currentSong = playlist->getSongs()[playlist->getCurrentIndex()];
+        auto songs = playlist->getSongs();
+        cout << BOLD << YELLOW;
+        cout << left
+            << "+-----+------------------------------+--------------------------+--------+--------------+\n"
+            << "| No. | Song Name                    | Singer                   | Year   | Genre        |\n"
+            << "+-----+------------------------------+--------------------------+--------+--------------+\n";
+        cout << RESET;
+
+        for (int i = 0; i < songs.GetSize(); i++) {
+            cout << left << YELLOW
+                << "| " << setw(3) << i + 1 << " "
+                << "| " << setw(28) << songs[i].getName()
+                << "| " << setw(24) << songs[i].getSinger()
+                << "| " << setw(6) << songs[i].getYear()
+                << "| " << setw(16) << songs[i].getGenre()
+                << "|" << DIM << BLINK << (i == playlist->getCurrentIndex() ? " <- Now Playing" : "") << RESET << '\n';
+        }
+
+        cout << BOLD << YELLOW
+            << "+-----+------------------------------+--------------------------+--------+--------------+\n"
+            << RESET;
+
+
+        cout << "\n";
+        cout << CYAN << BLINK;
+        cout << "+--------------------------------------------------+\n";
+        cout << "|                     Now Playing                  |\n";
+        cout << "+--------------------------------------------------+\n";
+        cout << "| Song   : " << setw(40) << left << currentSong.getName() << "|\n";
+        cout << "| Singer : " << setw(40) << left << currentSong.getSinger() << "|\n";
+        cout << "| Mode   : " << setw(40) << left << playlist->getPlayMode() << "|\n";
+        cout << "| Loop   : " << setw(40) << left << (playlist->getIsLoop() ? "On" : "Off") << "|\n";
+        cout << "+--------------------------------------------------+\n" << RESET;
+
+        cout << GREEN;
+        cout << "\n1. Next\n";
+        cout << "2. Previous\n";
+        cout << "3. Play Song\n";
+        cout << "4. Stop\n";
+        cout << "----------------\n";
+        cout << RESET;
+
+        int choice = getValidNumber("\nChoose an option: ", 1, 4);
+
+        switch (choice) {
+        case 1: {
+            if (playlist->getPlayMode() == "Random") {
+                playlist->setCurrentIndex(rand() % playlist->getSongs().GetSize());
+            }
+            else if (playlist->getPlayMode() == "Repeat") {
+            }
+            else {
+                playlist->setCurrentIndex(playlist->getCurrentIndex() + 1);
+                if (playlist->getCurrentIndex() >= playlist->getSongs().GetSize()) {
+                    if (playlist->getIsLoop()) playlist->setCurrentIndex(0);
+                    else {
+                        cout << RED << "End of playlist!" << RESET << '\n';
+                        return;
+                    }
+                }
+            }
+            break;
+        }
+        case 2: {
+            if (playlist->getPlayMode() == "Random") {
+                playlist->setCurrentIndex(rand() % playlist->getSongs().GetSize());
+            }
+            else if (playlist->getPlayMode() == "Repeat") {
+            }
+            else {
+                playlist->setCurrentIndex(playlist->getCurrentIndex() - 1);
+                if (playlist->getCurrentIndex() < 0) {
+                    if (playlist->getIsLoop()) playlist->setCurrentIndex(playlist->getSongs().GetSize() - 1);
+                    else {
+                        cout << RED << "Start of playlist!" << RESET << '\n';
+                        playlist->setCurrentIndex(0);
+                    }
+                }
+            }
+            break;
+        }
+        case 3: {
+            int songIndex = getValidNumber("Enter song number to play: ", 1, playlist->getSongs().GetSize());
+            playlist->setCurrentIndex(songIndex - 1);
+            cout << GREEN << "Now playing '" << playlist->getSongs()[songIndex - 1].getName() << "'!" << RESET << '\n';
+            break;
+        }
+        case 4: return;
+        }
+    }
+}
+
+void MusicPlayer::playAllSongs() {
+
+    displayHeader("Now Playing - All Songs");
+
+    if (allSongs.IsEmpty()) {
+        cout << RED << "No songs available!" << RESET << '\n';
+        return;
+    }
+    auto songs = allSongs;
+    string sortChoice = getValidInput("Sort playlist before playing? (y/n): ");
+    if (sortChoice == "y" || sortChoice == "Y") {
+        string criteria = getValidInput("Sort by (name/singer/year/genre): ");
+        if (criteria != "name" && criteria != "singer" && criteria != "year" && criteria != "genre") {
+            cout << RED << "Invalid criteria! Skipping sort." << RESET << '\n';
+        }
+        else {
+            bubbleSort(songs, criteria);
+            cout << GREEN << "Playlist sorted!" << RESET << '\n';
+        }
+    }
+
+    string mode = getValidInput("Set play mode (Sequential/Random/Repeat): ");
+    if (mode != "Sequential" && mode != "Random" && mode != "Repeat") {
+        cout << RED << "Invalid play mode! Using Sequential." << RESET << '\n';
+        mode = "Sequential";
+    }
+
+    string loop = getValidInput("Enable loop? (y/n): ");
+    bool isLoop = (loop == "y" || loop == "Y");
+    int currentIndex = 0;
+
+    while (true) {
+        displayHeader("Now Playing - All Songs");
+        Song currentSong = allSongs[currentIndex];
+        cout << BOLD << YELLOW;
+        cout << left
+            << "+-----+------------------------------+--------------------------+--------+--------------+\n"
+            << "| No. | Song Name                    | Singer                   | Year   | Genre        |\n"
+            << "+-----+------------------------------+--------------------------+--------+--------------+\n";
+        cout << RESET;
+
+        for (int i = 0; i < songs.GetSize(); i++) {
+            cout << left << YELLOW
+                << "| " << setw(3) << i + 1 << " "
+                << "| " << setw(29) << songs[i].getName()
+                << "| " << setw(25) << songs[i].getSinger()
+                << "| " << setw(7) << songs[i].getYear()
+                << "| " << setw(13) << songs[i].getGenre()
+                << "|" << endl;
+        }
+
+        cout << BOLD << YELLOW
+            << "+-----+------------------------------+--------------------------+--------+--------------+\n"
+            << RESET;
+        cout << "\n";
+        cout << CYAN << BLINK;
+        cout << "+--------------------------------------------------+\n";
+        cout << "|                     Now Playing                  |\n";
+        cout << "+--------------------------------------------------+\n";
+        cout << "| Song   : " << setw(40) << left << currentSong.getName() << "|\n";
+        cout << "| Singer : " << setw(40) << left << currentSong.getSinger() << "|\n";
+        cout << "| Mode   : " << setw(40) << left << mode << "|\n";
+        cout << "| Loop   : " << setw(40) << left << (isLoop ? "On" : "Off") << "|\n";
+        cout << "+--------------------------------------------------+\n\n" << RESET;
+
+        cout << GREEN;
+        cout << "1. Next\n";
+        cout << "2. Previous\n";
+        cout << "3. Stop\n";
+        cout << "----------------\n";
+        cout << RESET;
+
+        int choice = getValidNumber("\nChoose an option: ", 1, 3);
+
+        switch (choice) {
+        case 1: {
+            if (mode == "Random") {
+                currentIndex = rand() % allSongs.GetSize();
+            }
+            else if (mode == "Repeat") {
+            }
+            else {
+                currentIndex++;
+                if (currentIndex >= allSongs.GetSize()) {
+                    if (isLoop) currentIndex = 0;
+                    else {
+                        cout << RED << "End of song list!" << RESET << '\n';
+                        return;
+                    }
+                }
+            }
+            break;
+        }
+        case 2: {
+            if (mode == "Random") {
+                currentIndex = rand() % allSongs.GetSize();
+            }
+            else if (mode == "Repeat") {
+
+            }
+            else {
+                currentIndex--;
+                if (currentIndex < 0) {
+                    if (isLoop) currentIndex = allSongs.GetSize() - 1;
+                    else {
+                        cout << RED << "Start of song list!" << RESET << '\n';
+                        currentIndex = 0;
+                    }
+                }
+            }
+            break;
+        }
+        case 3: return;
+        }
+    }
+}
+
+void MusicPlayer::playSavedSongs() {
+    displayHeader("Now Playing - Saved Songs");
+
+    if (currentUser->getSavedSongs().IsEmpty()) {
+        cout << RED << "No saved songs available!" << RESET << '\n';
+        return;
+    }
+
+    string sortChoice = getValidInput("Sort playlist before playing? (y/n): ");
+    if (sortChoice == "y" || sortChoice == "Y") {
+        string criteria = getValidInput("Sort by (name/singer/year/genre): ");
+        if (criteria != "name" && criteria != "singer" && criteria != "year" && criteria != "genre") {
+            cout << RED << "Invalid criteria! Skipping sort." << RESET << '\n';
+        }
+        else {
+            bubbleSort(currentUser->getSavedSongs(), criteria);
+            cout << GREEN << "Playlist sorted!" << RESET << '\n';
+        }
+    }
+    string mode = getValidInput("Set play mode (Sequential/Random/Repeat): ");
+    if (mode != "Sequential" && mode != "Random" && mode != "Repeat") {
+        cout << RED << "Invalid play mode! Using Sequential." << RESET << '\n';
+        mode = "Sequential";
+    }
+
+    string loop = getValidInput("Enable loop? (y/n): ");
+    bool isLoop = (loop == "y" || loop == "Y");
+    int currentIndex = 0;
+
+    while (true) {
+        displayHeader("Now Playing - Saved Songs");
+        Song currentSong = currentUser->getSavedSongs()[currentIndex];
+
+        auto songs = currentUser->getSavedSongs();
+        cout << BOLD << YELLOW;
+        cout << left
+            << "+-----+------------------------------+--------------------------+--------+--------------+\n"
+            << "| No. | Song Name                    | Singer                   | Year   | Genre        |\n"
+            << "+-----+------------------------------+--------------------------+--------+--------------+\n";
+        cout << RESET;
+
+        for (int i = 0; i < songs.GetSize(); i++) {
+            cout << left << YELLOW
+                << "| " << setw(3) << i + 1 << " "
+                << "| " << setw(29) << songs[i].getName()
+                << "| " << setw(25) << songs[i].getSinger()
+                << "| " << setw(7) << songs[i].getYear()
+                << "| " << setw(13) << songs[i].getGenre()
+                << "|" << endl;
+        }
+
+        cout << YELLOW << BOLD
+            << "+-----+------------------------------+--------------------------+--------+--------------+\n"
+            << RESET;
+
+        cout << CYAN << BLINK;
+        cout << "+--------------------------------------------------+\n";
+        cout << "|                     Now Playing                  |\n";
+        cout << "+--------------------------------------------------+\n";
+        cout << "| Song   : " << setw(40) << left << currentSong.getName() << "|\n";
+        cout << "| Singer : " << setw(40) << left << currentSong.getSinger() << "|\n";
+        cout << "| Mode   : " << setw(40) << left << mode << "|\n";
+        cout << "| Loop   : " << setw(40) << left << (isLoop ? "On" : "Off") << "|\n";
+        cout << "+--------------------------------------------------+\n\n" << RESET;
+
+        cout << GREEN;
+        cout << "1. Next\n";
+        cout << "2. Previous\n";
+        cout << "3. Stop\n";
+        cout << "----------------\n";
+        cout << RESET;
+
+        int choice = getValidNumber("\nChoose an option: ", 1, 3);
+
+        switch (choice) {
+        case 1: {
+            if (mode == "Random") {
+                currentIndex = rand() % currentUser->getSavedSongs().GetSize();
+            }
+            else if (mode == "Repeat") {
+            }
+            else {
+                currentIndex++;
+                if (currentIndex >= currentUser->getSavedSongs().GetSize()) {
+                    if (isLoop) currentIndex = 0;
+                    else {
+                        cout << RED << "End of saved songs list!" << RESET << '\n';
+                        return;
+                    }
+                }
+            }
+            break;
+        }
+        case 2: {
+            if (mode == "Random") {
+                currentIndex = rand() % currentUser->getSavedSongs().GetSize();
+            }
+            else if (mode == "Repeat") {
+            }
+            else {
+                currentIndex--;
+                if (currentIndex < 0) {
+                    if (isLoop) currentIndex = currentUser->getSavedSongs().GetSize() - 1;
+                    else {
+                        cout << RED << "Start of saved songs list!" << RESET << '\n';
+                        currentIndex = 0;
+                    }
+                }
+            }
+            break;
+        }
+        case 3: return;
+        }
+    }
+}
+
+void MusicPlayer::playFavorites() {
+    displayHeader("Now Playing - Favorites");
+
+    if (currentUser->getFavorites().IsEmpty()) {
+        cout << RED << "No favorite songs available!" << RESET << '\n';
+        return;
+    }
+
+    string sortChoice = getValidInput("Sort playlist before playing? (y/n): ");
+    if (sortChoice == "y" || sortChoice == "Y") {
+        string criteria = getValidInput("Sort by (name/singer/year/genre): ");
+        if (criteria != "name" && criteria != "singer" && criteria != "year" && criteria != "genre") {
+            cout << RED << "Invalid criteria! Skipping sort." << RESET << '\n';
+        }
+        else {
+            bubbleSort(currentUser->getFavorites(), criteria);
+            cout << GREEN << "Playlist sorted!" << RESET << '\n';
+        }
+    }
+
+    string mode = getValidInput("Set play mode (Sequential/Random/Repeat): ");
+    if (mode != "Sequential" && mode != "Random" && mode != "Repeat") {
+        cout << RED << "Invalid play mode! Using Sequential." << RESET << '\n';
+        mode = "Sequential";
+    }
+
+    string loop = getValidInput("Enable loop? (y/n): ");
+    bool isLoop = (loop == "y" || loop == "Y");
+    int currentIndex = 0;
+
+    while (true) {
+        displayHeader("Now Playing - Favorites");
+        Song currentSong = currentUser->getFavorites()[currentIndex];
+        auto songs = currentUser->getFavorites();
+        cout << BOLD << YELLOW;
+        cout << left
+            << "+-----+------------------------------+--------------------------+--------+--------------+\n"
+            << "| No. | Song Name                    | Singer                   | Year   | Genre        |\n"
+            << "+-----+------------------------------+--------------------------+--------+--------------+\n";
+        cout << RESET;
+
+        for (int i = 0; i < songs.GetSize(); i++) {
+            cout << left << YELLOW
+                << "| " << setw(3) << i + 1 << " "
+                << "| " << setw(29) << songs[i].getName()
+                << "| " << setw(25) << songs[i].getSinger()
+                << "| " << setw(7) << songs[i].getYear()
+                << "| " << setw(13) << songs[i].getGenre()
+                << "|" << endl;
+        }
+
+        cout << YELLOW << BOLD
+            << "+-----+------------------------------+--------------------------+--------+--------------+\n"
+            << RESET;
+
+        cout << CYAN << BLINK;
+        cout << "+--------------------------------------------------+\n";
+        cout << "|                     Now Playing                  |\n";
+        cout << "+--------------------------------------------------+\n";
+        cout << "| Song   : " << setw(40) << left << currentSong.getName() << "|\n";
+        cout << "| Singer : " << setw(40) << left << currentSong.getSinger() << "|\n";
+        cout << "| Mode   : " << setw(40) << left << mode << "|\n";
+        cout << "| Loop   : " << setw(40) << left << (isLoop ? "On" : "Off") << "|\n";
+        cout << "+--------------------------------------------------+\n\n" << RESET;
+
+        cout << GREEN;
+        cout << "1. Next\n";
+        cout << "2. Previous\n";
+        cout << "3. Stop\n";
+        cout << "----------------\n";
+        cout << RESET;
+
+        int choice = getValidNumber("\nChoose an option: ", 1, 3);
+
+        switch (choice) {
+        case 1: {
+            if (mode == "Random") {
+                currentIndex = rand() % currentUser->getFavorites().GetSize();
+            }
+            else if (mode == "Repeat") {
+            }
+            else {
+                currentIndex++;
+                if (currentIndex >= currentUser->getFavorites().GetSize()) {
+                    if (isLoop) currentIndex = 0;
+                    else {
+                        cout << RED << "End of favorites list!" << RESET << '\n';
+                        return;
+                    }
+                }
+            }
+            break;
+        }
+        case 2: {
+            if (mode == "Random") {
+                currentIndex = rand() % currentUser->getFavorites().GetSize();
+            }
+            else if (mode == "Repeat") {
+            }
+            else {
+                currentIndex--;
+                if (currentIndex < 0) {
+                    if (isLoop) currentIndex = currentUser->getFavorites().GetSize() - 1;
+                    else {
+                        cout << RED << "Start of favorites list!" << RESET << '\n';
+                        currentIndex = 0;
+                    }
+                }
+            }
+            break;
+        }
+        case 3: return;
+        }
+    }
+}

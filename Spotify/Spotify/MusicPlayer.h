@@ -69,5 +69,12 @@ public:
 
     void viewSingerPage();
 
+    void playPlaylist();
+
+    void playAllSongs();
+
+    void playSavedSongs();
+
+    void playFavorites();
 
 };
