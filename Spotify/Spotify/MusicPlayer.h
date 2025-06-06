@@ -27,11 +27,17 @@ private:
 
 public:
 
+    void run();
+
     void registerUser();
 
     void loginUser();
 
     void loginAdmin();
+
+    void userMenu();
+
+    void adminMenu();
 
     void addSong();
 
@@ -39,21 +45,11 @@ public:
 
     void deleteSong();
 
-    void viewAllSongs();
-
-    void filterSongs(LinkedList<Song>& songs, const string& title);
-
     void createPlaylist();
 
     void editPlaylist();
 
     void deletePlaylist();
-
-    void addSongToPlaylist();
-
-    void viewPlaylists();
-
-    void searchPlaylists();
 
     void createSinger();
 
@@ -65,6 +61,32 @@ public:
 
     void removePlaylistFromSinger();
 
+    void viewUsers();
+
+    void editUser();
+
+    void deleteUser();
+
+    void viewAllSongs();
+
+    void filterSongs(LinkedList<Song>& songs, const string& title);
+
+    void addSongToPlaylist();
+
+    void viewFavorites();
+
+    void viewSavedSongs();
+
+    void editFavorites();
+
+    void editSavedSongs();
+
+    void viewPlaylists();
+
+    void searchSongs();
+
+    void searchPlaylists();
+
     void displaySingers();
 
     void viewSingerPage();
@@ -73,8 +95,7 @@ public:
 
     void playAllSongs();
 
-    void playSavedSongs();
-
     void playFavorites();
 
+    void playSavedSongs();
 };
