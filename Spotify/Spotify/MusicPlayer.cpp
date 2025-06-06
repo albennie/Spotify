@@ -667,3 +667,134 @@ void MusicPlayer::searchPlaylists() {
     displayPlaylists(results, "Search Results");
 }
 
+void MusicPlayer::createSinger() {
+    displayHeader("Create Singer");
+
+    string name = getValidInput("Enter singer name: ");
+    int albumCount = getValidNumber("Enter album count: ", 0, 50);
+
+    allSingers.PushBack(Singer(name, albumCount));
+
+    cout << GREEN << "Singer page created!" << RESET << '\n';
+}
+
+void MusicPlayer::editSinger() {
+    displayHeader("Edit Singer");
+    displaySingers();
+
+    if (allSingers.IsEmpty()) return;
+
+    int index = getValidNumber("Enter singer number to edit: ", 1, allSingers.GetSize());
+    Singer& singer = allSingers[index - 1];
+
+    singer.setName(getValidInput("Enter new singer name: "));
+    singer.setAlbumCount(getValidNumber("Enter new album count: ", 0, 100));
+
+    cout << GREEN << "Singer page updated!" << RESET << '\n';
+}
+
+void MusicPlayer::deleteSinger() {
+    displayHeader("Delete Singer");
+    displaySingers();
+
+    if (allSingers.IsEmpty()) return;
+
+    int index = getValidNumber("Enter singer number to delete: ", 1, allSingers.GetSize());
+    Singer singer = allSingers[index - 1];
+
+    if (singer.getSongCount() > 0) {
+        cout << RED << "Cannot delete singer with existing songs!" << RESET << '\n';
+        return;
+    }
+
+    allSingers.Remove(singer);
+    cout << GREEN << "Singer deleted successfully!" << RESET << '\n';
+}
+
+void MusicPlayer::addPlaylistToSinger() {
+    displayHeader("Add Playlist to Singer");
+    displaySingers();
+
+    if (allSingers.IsEmpty()) return;
+
+    int singerIndex = getValidNumber("Enter singer number: ", 1, allSingers.GetSize());
+    Singer& singer = allSingers[singerIndex - 1];
+
+    displayPlaylists(allPlaylists, "Available Playlists");
+
+    if (allPlaylists.IsEmpty()) return;
+
+    int plIndex = getValidNumber("Enter playlist number: ", 1, allPlaylists.GetSize());
+
+    Playlist playlist = allPlaylists[plIndex - 1];
+
+    if (!singer.getPlaylists().Contains(playlist)) {
+        singer.getPlaylists().PushBack(playlist);
+        cout << GREEN << "Playlist added to singer!" << RESET << '\n';
+    }
+    else {
+        cout << RED << "Playlist already added to this singer!" << RESET << '\n';
+    }
+}
+
+void MusicPlayer::removePlaylistFromSinger() {
+    displayHeader("Remove Playlist from Singer");
+    displaySingers();
+
+    if (allSingers.IsEmpty()) return;
+
+    int singerIndex = getValidNumber("Enter singer number: ", 1, allSingers.GetSize());
+    Singer& singer = allSingers[singerIndex - 1];
+
+    displayPlaylists(singer.getPlaylists(), "Singer Playlists");
+
+    if (singer.getPlaylists().IsEmpty()) return;
+
+    int plIndex = getValidNumber("Enter playlist number to remove: ", 1, singer.getPlaylists().GetSize());
+
+    singer.getPlaylists().Remove(singer.getPlaylists()[plIndex - 1]);
+
+    cout << GREEN << "Playlist removed from singer!" << RESET << '\n';
+}
+
+void MusicPlayer::displaySingers() {
+    if (allSingers.IsEmpty()) {
+        cout << RED << "No singers available!" << RESET << '\n';
+        return;
+    }
+    cout << BOLD << YELLOW;
+    cout << "+-----+--------------------------+----------+--------+" << '\n';
+    cout << "| No. | Singer Name              | Albums   | Songs  |" << '\n';
+    cout << "+-----+--------------------------+----------+--------+" << '\n';
+
+    for (int i = 0; i < allSingers.GetSize(); i++) {
+        cout << left << "| " << setw(3) << i + 1 << " "
+            << "| " << setw(25) << left << allSingers[i].getName()
+            << "| " << setw(8) << left << allSingers[i].getAlbumCount()
+            << " | " << setw(6) << left << allSingers[i].getSongCount()
+            << " |" << '\n';
+    }
+
+    cout << "+-----+--------------------------+----------+--------+" << RESET << '\n';
+
+}
+
+void MusicPlayer::viewSingerPage() {
+    displayHeader("Singer Page");
+    displaySingers();
+
+    if (allSingers.IsEmpty()) return;
+
+    int index = getValidNumber("Enter singer number: ", 1, allSingers.GetSize());
+
+    Singer& singer = allSingers[index - 1];
+
+    displayHeader(singer.getName());
+    cout << YELLOW << "Singer: " << singer.getName() << "\nAlbums: " << singer.getAlbumCount()
+        << "\nSongs: " << singer.getSongCount() << "\n\nSongs List:" << RESET << '\n';
+
+    displaySongs(singer.getSongs(), "Singer Songs", false);
+
+    cout << "\nAssociated Playlists:\n";
+    displayPlaylists(singer.getPlaylists(), "Singer Playlists", false);
+}

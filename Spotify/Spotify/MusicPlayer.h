@@ -55,4 +55,19 @@ public:
 
     void searchPlaylists();
 
+    void createSinger();
+
+    void editSinger();
+
+    void deleteSinger();
+
+    void addPlaylistToSinger();
+
+    void removePlaylistFromSinger();
+
+    void displaySingers();
+
+    void viewSingerPage();
+
+
 };
