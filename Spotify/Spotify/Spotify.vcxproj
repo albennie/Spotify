@@ -126,6 +126,7 @@
     <ClCompile Include="Account.cpp" />
     <ClCompile Include="Admin.cpp" />
     <ClCompile Include="LinkedList.cpp" />
+    <ClCompile Include="MusicPlayer.cpp" />
     <ClCompile Include="Node.cpp" />
     <ClCompile Include="Playlist.cpp" />
     <ClCompile Include="Singer.cpp" />
@@ -137,6 +138,7 @@
     <ClInclude Include="Account.h" />
     <ClInclude Include="Admin.h" />
     <ClInclude Include="LinkedList.h" />
+    <ClInclude Include="MusicPlayer.h" />
     <ClInclude Include="Node.h" />
     <ClInclude Include="Playlist.h" />
     <ClInclude Include="Singer.h" />
