@@ -406,8 +406,8 @@ void MusicPlayer::userMenu() {
 
         cout << "| 1  | View All Songs           | 9  | Search Playlists            |\n"
             << "| 2  | View Favorites           | 10 | View Singer Page            |\n"
-            << "| 3  | View Saved Songs         | 11 | Logout                      |\n"
-            << "| 4  | View Playlists           | .. |                             |\n"
+            << "| 3  | View Saved Songs         | 11 | Play PlayLists              |\n"
+            << "| 4  | View Playlists           | 12 | Logout                      |\n"
             << "| 5  | Create Playlist          | .. |                             |\n"
             << "| 6  | Edit Playlist            | .. |                             |\n"
             << "| 7  | Delete Playlist          | .. |                             |\n"
@@ -416,7 +416,7 @@ void MusicPlayer::userMenu() {
         cout << "+----+--------------------------+----+-----------------------------+\n"
             << RESET;
 
-        int choice = getValidNumber("Choose an option: ", 1, 11);
+        int choice = getValidNumber("Choose an option: ", 1, 12);
         switch (choice) {
         case 1: viewAllSongs(); break;
         case 2: viewFavorites(); break;
@@ -428,7 +428,8 @@ void MusicPlayer::userMenu() {
         case 8: searchSongs(); break;
         case 9: searchPlaylists(); break;
         case 10: viewSingerPage(); break;
-        case 11: return;
+        case 11: playPlaylist();
+        case 12: return;
         }
         cout << "Press Enter to continue..."; cin.get();
     }
